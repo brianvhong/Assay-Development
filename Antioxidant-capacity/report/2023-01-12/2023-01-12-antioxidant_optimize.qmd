@@ -50,7 +50,6 @@ select <- dplyr::select
 ```{r}
 
 #| message: false
-#| 
 AOC <- read_excel(path = here("Antioxidant-capacity", "raw","2023-01-12-antioxidant_optimize_column_wise.xlsx"),
                   range = "B41:AG72") |>
         separate(col = "Time", 
@@ -70,8 +69,8 @@ AOC <- read_excel(path = here("Antioxidant-capacity", "raw","2023-01-12-antioxid
 plate_layout <- read_excel(path = here("Antioxidant-capacity","plate_layout","2023-01-12-antioxidant_optimize_plate_layout.xlsx"),
                            range = "A1:M9") |>
         column_to_rownames("...1") |>
-        as.matrix() %>%
-        melt() %>%
+        as.matrix() |>
+        melt() |>
         rename(sample = "value")
 plate_layout$position <- paste0(plate_layout$Var1, plate_layout$Var2)
 
@@ -87,7 +86,7 @@ ggplot(AOC, aes(x = minutes, y = value, color = position)) +
 
 > Looks linear from 1 min to 20 min. Slope (RFU/min) is calculated between those two times.
 
-### Calculate Slopes(RFU/min)
+### Calculate Slopes (RFU/min)
 
 ```{r}
 AOC_slope <- AOC |>
@@ -103,7 +102,9 @@ datatable(AOC_slope)
 ### Slope Plot
 
 ```{r}
-#| fig.dim: c(6, 8)
+#| fig-width: 10
+#| fig-height: 10
+
 ########## CLD stats Slope figure ###################
 # ANOVA
 anova <- aov(slope ~ sample, data = AOC_slope)
@@ -112,8 +113,8 @@ anova <- aov(slope ~ sample, data = AOC_slope)
 p_value <- signif(summary(anova)[[1]][["Pr(>F)"]][1],3)
 
 # Contrast with Tukey Adjustmnet + Assign letters
-emmcld <- anova %>%
-emmeans(~ sample) %>%
+emmcld <- anova |>
+emmeans(~ sample) |>
   multcomp::cld(Letters = letters, 
                 adjust = "Tukey",
                 sort = FALSE)
@@ -121,8 +122,8 @@ emmeans(~ sample) %>%
 
 
 ## Data Summary ##
-dt_summary <- AOC_slope %>%
-  group_by(sample) %>%
+dt_summary <- AOC_slope |>
+  group_by(sample) |>
         summarize(mean = mean(slope),
                   sd = sd(slope))
 ## cbind
@@ -219,7 +220,8 @@ datatable(AOC_iAUC_summary |>
 ### Incremental AUC Plot
 
 ```{r}
-#| fig.dim: c(8, 8)
+#| fig-width: 10
+#| fig-height: 10
 
 ########## CLD stats for iAUC figure ###################
 # ANOVA
@@ -229,8 +231,8 @@ anova <- aov(iAUC ~ sample, data = AOC_iAUC_summary)
 p_value <- signif(summary(anova)[[1]][["Pr(>F)"]][1],3)
 
 # Contrast with Tukey Adjustmnet + Assign letters
-emmcld <- anova %>%
-emmeans(~ sample) %>%
+emmcld <- anova |>
+emmeans(~ sample) |>
   multcomp::cld(Letters = letters, 
                 adjust = "Tukey",
                 sort = FALSE)
@@ -238,8 +240,8 @@ emmeans(~ sample) %>%
 
 
 ## Data Summary ##
-dt_summary <- AOC_iAUC_summary %>%
-  group_by(sample) %>%
+dt_summary <- AOC_iAUC_summary |>
+  group_by(sample) |>
         summarize(mean = mean(iAUC),
                   sd = sd(iAUC))
 ## cbind
