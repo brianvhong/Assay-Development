@@ -12,6 +12,20 @@ format:
 
 To determine whether the antioxidant capacity assay is compatible with our isolated HDL, HDL isolated by sequential flotation ultracentrifugation followed by SEC using our FPLC. This cell-free assay measure HDL function by its ability to inhibit oxidation of Dihydrorhodamine 123 (DHR) mediated by azobis.
 
+## Sample Type
+
+1.   apob-dep_2 = 2% ApoB-depleted plasma
+
+2.  apob-dep_5 = 5% ApoB-depleted plasma
+
+3.  HDL_1ug - 1 ug of HDL in 175 uL total volume
+
+4.  HDL_5ug - 5 ug of HDL in 175 uL total volume
+
+5.  HDL_10ug - 10 ug of HDL in 175 uL total volume
+
+6.  HDL_20ug - 20 ug of HDL in 175 uL total volume
+
 ## Packages
 
 ```{r}
@@ -146,7 +160,7 @@ ggplot() +
         theme(axis.text = element_text(angle = 90, color = "black"),
               text = element_text(size = 20),
               legend.position = "top") +
-        ylim(0, max(gg_df$mean)*1.2)
+        ylim(0, max(gg_df$mean)*1.5)
 ```
 
 ## Calculate Incremental AUC
@@ -205,7 +219,7 @@ datatable(AOC_iAUC_summary |>
 ### Incremental AUC Plot
 
 ```{r}
-#| fig.dim: c(6, 8)
+#| fig.dim: c(8, 8)
 
 ########## CLD stats for iAUC figure ###################
 # ANOVA
@@ -263,7 +277,7 @@ ggplot() +
         theme(axis.text = element_text(angle = 90, color = "black"),
               text = element_text(size = 20),
               legend.position = "top") +
-        ylim(0, max(gg_df$mean)*1.2)
+        ylim(0, max(gg_df$mean)*1.5)
 ```
 
 ## Conclusion
