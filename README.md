@@ -20,5 +20,5 @@ To document assay development for the [Zivkovic's lab](https://zivkoviclab.ucdav
 
 - This cell-based assay is be performed on a 96-well plate. 
 - New method is robust, most CVs <3%. 
-- Works with ApoB-depleted plasma and isolated HDL (UC+FPLC).
+- Works with ApoB-depleted plasma and isolated HDL (UC+FPLC). Does not work with untreated plasma (media clumps with plasma).
 - Works on multiple cell lines. Cells tested on J774A.1 and HMC3 microglia.
