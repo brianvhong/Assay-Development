@@ -1,0 +1,129 @@
+---
+title: "CEC Assay Development/QC and Notes"
+author: "Brian"
+date: "3/25/2022"
+output: 
+        html_document:
+                toc: true
+                toc_float: true
+---
+
+## Optimization CEC assay:
+<font size="5"> 
+
+- **Grow J774A.1 in RPMI 1640 (previously DMEM)**
+
+> Cells grow quickly, ready in 2 Days for plating after thaw. pH did not change as quickly as DMEM, which is good. 
+
+- **Plate cells overnight at 50,000 cells/well. For example plate 4pm the day before, then run assay next morning (I previously plated the day of assay at 100,000 cells/well)**
+
+> This method WORKS! Not only do you save 4 hours waiting for cells to adhere, but the cells seems to grow and adhere nicely. The doubling time for J774A.1 is roughly 18 Hours. 
+
+- **Flick method for washing (previously I vacuumed each well individually)**
+
+> Cells were still adherent after "Flick". This method is much faster and does not disturb cells as with vacuum.
+
+- **[Fluorobrite DMEM](https://www.thermofisher.com/us/en/home/life-science/cell-culture/mammalian-cell-culture/classical-media/fluorobrite-media.html) (low fluorescence media) for Acceptor Incubation (I previously used serum-free DMEM with phenol red)**
+
+> Fluorobrite DMEM is WAY BETTER. Lower background fluorescence, negative control % CEC is very low (<4-5%). Highly recommend, always!
+
+- **Total acceptor volume increased to 150 uL (previously 100 uL)**
+
+> This works if you have a surplus of acceptors to use. In this case, I used ApoB-depleted plasma and well, I had plenty! I recommend this for isolated HDL if possible. Better to work with larger volumes.
+
+- **[Breathe-Easy®](https://www.sigmaaldrich.com/US/en/product/sigma/z380059) sealing membrane (previously 96-well lid)** 
+
+> There was no evaporation during a 4 hour incubation. I highly recommend a sealing membrane for cell culture incubation or anything that requires incubating with 96-well plate. 
+
+
+**I also recommend running the following microplate reading parameters**
+
+- Three Reads with at least 15 reads/well. You can average reads afterwards.
+
+- Area scan for lyse fraction. You get *Higher signal* and *Better results*! You should only do 10 reads/well with area scan because this parameter takes long (10min per plate).
+
+- Lyse Fraction should read in **EXTENDED DYANAMIC RANGE ON AREA SCAN ONLY** 
+
+- Remember to change the **PLATE TYPE** on the software. The software adjusts the signal based on what plate you choose (opaque black bottom vs black clear bottom).
+
+
+
+**More Important Notes**
+
+-  The new CEC protocol from [Abcam](https://www.abcam.com/ps/products/196/ab196985/documents/Cholesterol-Efflux-Assay-protocol-book-v4-ab196985%20(website).pdf) uses a different microplate reading wavelength (Ex/Em = 485/523 nm). Keep in mind, companies are always working to improve their products so it's good to check the product protocol frequently to see if any new changes were made to the original. 
+
+
+- I still recommend the following: 1/2 Cholesterol, 4 HR Cholesterol Loading, 4 HR Acceptor incubation, 30 min Lysing with M-PER.
+</font> 
+
+***
+
+```{r include = F}
+### Data Analysis ###
+## Library
+library(tidyverse)
+library(rstatix)
+library(DT)
+library(ggpubr)
+library(DescTools)
+library(ggstatsplot)
+library(palmerpenguins)
+
+### Read CSV CEC
+CEC_plate1 <- read.csv(file = "./Cholesterol-efflux-capacity/tidy/CEC_plate1_summary.csv", header = TRUE)
+CEC_plate2 <- read.csv(file = "./Cholesterol-efflux-capacity/tidy/CEC_plate2_summary.csv", header = TRUE)
+CEC_plate3 <- read.csv(file = "./Cholesterol-efflux-capacity/tidy/CEC_plate3_summary.csv", header = TRUE)
+CEC_plate4 <- read.csv(file = "./Cholesterol-efflux-capacity/tidy/CEC_plate4_summary.csv", header = TRUE)
+CEC_plate5 <- read.csv(file = "./Cholesterol-efflux-capacity/tidy/CEC_plate5_summary.csv", header = TRUE)
+CEC_plate6 <- read.csv(file = "./Cholesterol-efflux-capacity/tidy/CEC_plate6_summary.csv", header = TRUE)
+CEC_plate7 <- read.csv(file = "./Cholesterol-efflux-capacity/tidy/CEC_plate7_summary.csv", header = TRUE)
+CEC_plate8 <- read.csv(file = "./Cholesterol-efflux-capacity/tidy/CEC_plate8_summary.csv", header = TRUE)
+CEC_all <- rbind(CEC_plate1, CEC_plate2, CEC_plate3, CEC_plate4, CEC_plate5, CEC_plate6, CEC_plate7, CEC_plate8)
+
+## Intra-cv
+mean(CEC_all$cv_cec_average[CEC_all$subject_id == "ercc"])
+
+## InterCV
+sd(CEC_all$mean_cec_average[CEC_all$subject_id == "ercc"])/mean(CEC_all$mean_cec_average[CEC_all$subject_id == "ercc"])*100
+
+```
+
+***
+
+## CEC CV Histogram
+```{r}
+CEC_filter <- CEC_all %>%
+        filter(!(subject_id %in% c("delipid", "ercc", "pc")))
+    
+ggplot(CEC_filter, aes(x=cv_cec_average)) + 
+        geom_histogram(binwidth = 0.1, fill="black", col="grey") +
+        labs(x = "CV (%)") 
+
+```
+
+> ERCC Intra-cv = 2.7%, Inter-cv =  9.8%
+
+***
+
+## CEC Table
+```{r}
+datatable(CEC_all, colnames = c("Subject ID", "Plate", "Norm. CEC Mean (%)", "SD", "CV (%)", "CEC Index")) %>%
+        formatRound(columns=c("mean_cec_average", "sd_cec_average", "cv_cec_average", "index_cec_average"), digits=2)
+```
+
+## Plate Comparison
+### Non-normalize
+```{r}
+ggboxplot(CEC_filter, x = "plate", y = "mean_cec_average") +
+        theme(legend.position = "none") +
+        stat_compare_means(method = "anova") +
+        labs(y = "%CEC", x = "Plate")
+```
+
+### Normalized to ERCC
+```{r}
+ggboxplot(CEC_filter, x = "plate", y = "index_cec_average") +
+        theme(legend.position = "none") +
+        stat_compare_means(method = "anova") +
+        labs(y = "CEC Index", x = "Plate")
+```
