@@ -1,0 +1,101 @@
+---
+title: "LCAT Activity Assay"
+author: "Brian"
+date: "6/16/2021"
+output: 
+  html_document:
+          toc: TRUE
+          toc_float: TRUE
+---
+
+## Objective
+
+To compare lecithin-cholesterol acyltransferase (LCAT) activity by dose-response using ERCC plasma, ApoB-depleted plasma, and HDL.
+
+***
+
+## Method
+
+### Samples
+
+- ERCC Plasma: 2 uL, 4 uL, 8 uL
+
+- ERCC ApoB-depleted Plasma: 2 uL, 4 uL, 8 uL
+
+- ERCC HDL: 2.5 ug, 5 ug, 10 ug, 150 ug, 20 ug, 25 ug of HDL protein (Nanodrop)
+
+- 2.5 Hour incubation @ 37C in water bath.
+
+*Note*: 2.5 and 25 ug HDL protein is equivalent to 25 ug/ml and 250 ug/ml, respectively. 
+
+***
+
+### Detailed method
+
+LCAT activity was measured using a validated fluorometric kit (Roar Biomedical, NY, USA), as per manufacturer’s instructions. LCAT activity was read fluorometrically at 390 nm and 470 nm and expressed as a ratio of the two. These two wavelengths represent the LCAT substrate hydrolysed and not hydrolysed. An increase in the ratio indicates increased LCAT activity.
+
+![](LCAT.png)
+
+```{r include = FALSE}
+if(!any(rownames(installed.packages()) == "pacman"))
+        install.packages("pacman")
+
+pacman::p_load(tidyverse,
+               DT,
+               here)
+
+#Read CSV
+LCAT <- read_csv(here("LCAT","tidy_data","20210615_LCAT.csv"))
+
+#Add CV
+LCAT <- LCAT %>%
+        group_by(sample, concentration) %>%
+        mutate(ratio = 1/ratio,
+                cv = sd(ratio)/mean(ratio)*100) %>% 
+        unite("Sample", sample:units, remove = FALSE)
+
+LCAT$Sample<- as.factor(LCAT$Sample)
+
+
+LCAT_summary <- LCAT %>%
+        group_by(Sample) %>%
+        summarize(mean = mean(ratio), sd = sd(ratio), cv = sd/mean)
+
+
+```
+
+
+***
+
+## Bar Graph
+
+```{r echo = FALSE}
+LCAT_summary$Sample <-  factor(LCAT_summary$Sample, levels = c("plasma_2_ul", "plasma_4_ul", "plasma_8_ul",
+                                                  "ApoB_dep_2_ul", "ApoB_dep_4_ul", "ApoB_dep_8_ul", 
+                                                  "HDL_2.5_ug", "HDL_5_ug", "HDL_10_ug", "HDL_15_ug",
+                                                  "HDL_20_ug", "HDL_25_ug"))
+
+ggplot(LCAT_summary, aes(x = Sample, y=mean, fill = Sample)) + 
+        geom_bar(stat = 'identity') +
+        geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.1) +
+        theme(axis.text.x = element_text(angle = 90)) +
+        theme(legend.position = "none") +
+        labs(y = "390/470")
+```
+
+***
+
+## CV
+
+```{r echo = FALSE}
+## Data Table
+datatable(LCAT_summary,  colnames = c('Sample','Mean (390/470 ratio)', 'SD', 'CV (%)')) %>%
+        formatRound(c('mean', 'sd', 'cv'), digits = 2) %>%
+        formatPercentage('cv', 2)
+```
+
+***
+
+## Summary
+
+LCAT activity increased in a dose-response manner for all samples. Plasma and ApoB-depleted plasma showed similar trends. Although LCAT activity of HDL was lowest, increasing incubation time may help maximize signal. 
