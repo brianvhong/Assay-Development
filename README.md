@@ -9,7 +9,7 @@ To document assay development for the Zivkovic's lab. We are interested in inves
 - Works well with ApoB-depleted plasma and most likely plasma.
 - Not compatible with HDL isolated by UC+FPLC.
 
-# Lecithin–cholesterol acyltransferase (LCAT) activity assay
+# Lecithin–Cholesterol Acyltransferase (LCAT) Activity Assay
 
 - This cell-free assay can be performed on a 96-well plate. 
 - CVs were fantastic <3%.
