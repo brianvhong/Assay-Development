@@ -13,7 +13,7 @@ To document assay development for the [Zivkovic's lab](https://zivkoviclab.ucdav
 
 - This cell-free assay can be performed on a 96-well plate. 
 - CVs were fantastic <3%.
-- Works well with HDL isolated by UC+FPLC and plasma. Most likely work with ApoB-depleted plasma.
+- Works well with HDL isolated by UC+FPLC, plasma and ApoB-depleted plasma.
 - Clear dose reponse with increasing sample concentration.
 
 # Cholesterol Efflux Capacity (CEC) Assay
