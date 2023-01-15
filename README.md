@@ -18,6 +18,6 @@ To document assay development for the [Zivkovic's lab](https://zivkoviclab.ucdav
 
 # Cholesterol Efflux Capacity (CEC) Assay
 
-- New method is robust, CVs <3%.
-- Works with ApoB-depleted plasma and isolated HDL.
-- Works on multiple cell lines.
+- New method is robust, most CVs <3%.
+- Works with ApoB-depleted plasma and isolated HDL (UC+FPLC).
+- Works on multiple cell lines. Cells tested include J774A.1 and HMC3 microglia.
