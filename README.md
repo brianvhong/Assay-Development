@@ -5,7 +5,7 @@ To document assay development for the Zivkovic's lab. We are interested in inves
 # Antioxidant Capacity Assay
 
 - This cell-free assay can be performed on a 96-well plate. 
-- CVs were decent ~5-10%.
+- CVs were decent ~1-12%.
 - Works well with ApoB-depleted plasma and most likely plasma.
 - Not compatible with HDL isolated by UC+FPLC.
 
